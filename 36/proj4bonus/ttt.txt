@@ -1,0 +1,64 @@
+def display_against_random(episode, policy, env, times):
+    load_weights(policy, episode)
+    for game in range(times):
+        print('\n===== Game' + str(game + 1) + ' =====')
+        state = env.reset()
+        done = False
+        while not done:
+            action, logprob = select_action(policy, state)
+            state, status, done = env.play_against_random(action, print_grid=True)
+            if done:
+                print('Learned policy ' + status + 's against random! (learned policy moves first)')
+
+
+def display_second_against_random(episode, policy, env, times):
+    load_weights(policy, episode)
+    for game in range(times):
+        print('\n===== Game' + str(game + 1) + ' =====')
+        state = env.reset()
+        done = False
+        while not done:
+            action, logprob = select_action(policy, state)
+            state, status, done = env.play_second_against_random(action, print_grid=True)
+            if done:
+                print('Learned policy ' + status + 's against random! (random moves first)')
+
+
+def display_self_play(episode, policy, env, times):
+    load_weights(policy, episode, againstself=True)
+    for game in range(times):
+        print('\n===== Game' + str(game + 1) + ' =====')
+        state = env.reset()
+        done = False
+        while not done:
+            action, logprob = select_action(policy, state)
+            state, status, done = env.step(action)
+            env.render()
+            if done:
+                if status == env.STATUS_WIN:
+                    print('First player wins!')
+                elif status == env.STATUS_TIE:
+                    print('Tie.')
+            if not done and env.turn == 2:
+                status2 = env.STATUS_INVALID_MOVE
+                while status2 == env.STATUS_INVALID_MOVE:
+                    action2, logprob2 = select_action(policy, state)
+                    state, status2, done = env.step(action2)
+                    env.render()
+                if done:
+                    if status2 == env.STATUS_WIN:
+                        status = env.STATUS_LOSE
+                        print('Second player wins!')
+                    elif status2 == env.STATUS_TIE:
+                        status = env.STATUS_TIE
+                        print('Tie.')
+                    else:
+                        raise ValueError("???")
+
+
+
+    policy = Policy(hidden_size=512)
+    load_weights(policy, 49000)
+    display_against_random(49000, policy, env, 2)
+    display_second_against_random(49000, policy, env, 3)
+    display_self_play(49000, policy, env, 5)

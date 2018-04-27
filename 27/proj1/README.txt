@@ -1,0 +1,2 @@
+1. To run faces.py, unzip the cropped.zip and place it in the same folder as faces.py
+2. The faces.tex need some pictures from the uncropped folder, which are too big for submission, for the Part 1 answer. Comment or delete those lines to compile the report. All other images are either included in cropped or is be able to obtain from running faces.py
